@@ -2,12 +2,12 @@ const bcryptjs = require("bcryptjs");
 const jwt = require('jsonwebtoken')
 const router = require("express").Router();
 const { jwtSecret } = require('../../config/secrets.js')
-const Users = require("../users/users-model.js");
-const { isValid } = require("../users/users-service.js");
+const Users = require("../users/users_model");
+// const { isValid } = require("../users/users-service.js");
 
 router.post("/register", (req, res) => {
   const credentials = req.body;
-  if (isValid(credentials)) {
+  if (Users.isValid(credentials)) {
     const rounds = process.env.BCRYPT_ROUNDS || 11;
     const hash = bcryptjs.hashSync(credentials.password, rounds);
     credentials.password = hash;
@@ -25,7 +25,7 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
-  if (isValid(req.body)) {
+  if (Users.isValid(req.body)) {
     Users.findBy({ username: username })
       .then(([user]) => {
         if (user && bcryptjs.compareSync(password, user.password)) {
